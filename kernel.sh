@@ -15,9 +15,20 @@ while (( ${#} )); do
 done
 [[ -z ${ZIP} ]] && { echo "${bold}LOADING-_-....${normal}"; }
 
+export KERNELDIR="/workspace/tmp/krnl" 
+export USE_CCACHE=1
+export CCACHE_DIR="/workspace/.ccache"
 DEFCONFIG="beryllium_defconfig"
-export KBUILD_BUILD_USER=Rsyd58
-export KBUILD_BUILD_HOST=root-android-13-tkq1.220905.001
+export KBUILD_BUILD_USER=Unknown44
+export KERNELNAME="MINTKernel" 
+export SRCDIR="${KERNELDIR}";
+export OUTDIR="${KERNELDIR}/out"
+export ANYKERNEL="${KERNELDIR}/Anykernel3"
+export ARCH="arm64"
+export SUBARCH="arm64"
+export ZIP_DIR="${KERNELDIR}/files";
+export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb";
+# export KBUILD_BUILD_HOST=
 TC_DIR="/workspace/proton-clang"
 export PATH="$TC_DIR/bin:$PATH"
 
@@ -40,9 +51,17 @@ make -j$(nproc --all) O=out ARCH=arm64 CC=clang LD=ld.lld AR=llvm-ar AS=llvm-as 
     echo -e "==========================="
     echo -e "   COMPILE KERNEL COMPLETE "
     echo -e "==========================="
-
-echo -e "zip boot and dtbo"
-cd out/arch/arm64/boot && zip kernel.zip Image.gz-dtb && rm -rf Image.gz-dtb && mv kernel.zip /w* && cd /w* && ls
+    
+# Make ZIP using AnyKernel
+# ================
+echo -e "Copying kernel image";
+cp -v "${IMAGE}" "${ANYKERNEL}/";
+cd -;
+cd ${ANYKERNEL};
+zip -r9 ${FINAL_ZIP} *;
+cd -;
+# echo -e "zip boot and dtbo"
+# cd out/arch/arm64/boot && zip kernel.zip Image.gz-dtb && rm -rf Image.gz-dtb && mv kernel.zip /w* && cd /w* && ls
 
 if [[ ":v" ]]; then
 exit
